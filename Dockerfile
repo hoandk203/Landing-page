@@ -24,6 +24,9 @@ COPY . .
 # Disable telemetry during the build
 ENV NEXT_TELEMETRY_DISABLED 1
 
+# Optimize build for lower memory usage
+ENV NODE_OPTIONS="--max-old-space-size=1536"
+
 RUN \
   if [ -f yarn.lock ]; then yarn run build; \
   elif [ -f package-lock.json ]; then npm run build; \
