@@ -63,12 +63,35 @@ cd $PROJECT_DIR
 print_status "Stopping existing containers..."
 docker-compose down 2>/dev/null || true
 
+# Clean up space first
+print_status "Cleaning up disk space..."
+docker system prune -af --volumes 2>/dev/null || true
+rm -rf temp-repo node_modules .next 2>/dev/null || true
+
+# Check available space
+AVAILABLE_SPACE=$(df / | awk 'NR==2 {print $4}')
+print_status "Available disk space: $(($AVAILABLE_SPACE / 1024)) MB"
+
+if [ $AVAILABLE_SPACE -lt 2097152 ]; then  # Less than 2GB
+    print_error "Insufficient disk space. Need at least 2GB free."
+    print_status "Cleaning more aggressively..."
+    # Clean Docker cache
+    docker builder prune -af 2>/dev/null || true
+    # Clean apt cache
+    apt-get clean 2>/dev/null || true
+    rm -rf /var/lib/apt/lists/* 2>/dev/null || true
+    # Clean logs
+    journalctl --vacuum-time=1d 2>/dev/null || true
+fi
+
 # Pull latest code from GitHub with shallow clone for speed
 print_status "Pulling latest code from GitHub (shallow clone)..."
-rm -rf temp-repo
-git clone --depth 1 https://github.com/HungNgo4444/Landing-page.git temp-repo
-cp -r temp-repo/* .
-rm -rf temp-repo
+cd /tmp
+rm -rf Landing-page-temp 2>/dev/null || true
+git clone --depth 1 https://github.com/hoandk203/Landing-page.git Landing-page-temp
+cd $PROJECT_DIR
+cp -r /tmp/Landing-page-temp/* .
+rm -rf /tmp/Landing-page-temp
 
 # Build with build cache and parallel processes
 print_status "Building with optimized settings..."
