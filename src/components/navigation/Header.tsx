@@ -73,12 +73,13 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center">
               {/* để img và không ở thành Image */}
-            <img
-              src="/LOGO-QUANTUMINE-03.png"
-              alt="Quantumine"
-              className="h-32 w-auto cursor-pointer"
-              onClick={() => handleNavigation('#home')}
-            />
+            {/*<img*/}
+            {/*  src="/LOGO-QUANTUMINE-03.png"*/}
+            {/*  alt="Quantumine"*/}
+            {/*  className="h-32 w-auto cursor-pointer"*/}
+            {/*  onClick={() => handleNavigation('#home')}*/}
+            {/*/>*/}
+              <span className={'text-xl uppercase font-bold'}>Quantumine</span>
           </div>
 
           {/* Desktop Navigation */}
