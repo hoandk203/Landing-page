@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Header } from '@/components/navigation/Header'
 import { StatsPanel } from '@/components/stats/StatsPanel'
@@ -20,6 +20,18 @@ export default function HomePage() {
   const [showContactModal, setShowContactModal] = useState(false)
   const [currentLanguage, setCurrentLanguage] = useState<'en' | 'vn'>('vn')
   const [showStatsPanel, setShowStatsPanel] = useState(false)
+
+  // Ensure page starts at top
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.scrollTo(0, 0)
+      // Also set scroll position after a slight delay to handle any layout shifts
+      const timer = setTimeout(() => {
+        window.scrollTo(0, 0)
+      }, 100)
+      return () => clearTimeout(timer)
+    }
+  }, [])
 
   const handleRequestDemo = useCallback(() => {
     setShowDemoModal(true)
@@ -101,9 +113,12 @@ export default function HomePage() {
   }, [showStatsPanel])
 
   return (
-    <div className="relative overflow-x-hidden min-h-screen bg-gray-900" style={{
+    <div className="relative overflow-x-hidden min-h-screen" style={{
       background: `
-        
+        radial-gradient(circle at 10% 20%, rgba(168, 85, 247, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 50%, rgba(168, 85, 247, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 20% 80%, rgba(34, 197, 94, 0.15) 0%, transparent 50%),
+        linear-gradient(135deg, #1f2937 0%, #111827 50%, #1f2937 100%)
       `
     }}>
       {/* Global Background SVG */}

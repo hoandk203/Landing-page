@@ -33,14 +33,14 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL('https://quantumine.com'),
+  metadataBase: new URL('https://quantumine.com.vn'),
   alternates: {
     canonical: '/',
   },
   openGraph: {
     title: 'Quantumine - Hệ Sinh Thái Trading Định Lượng Tiên Tiến',
     description: 'Từ backtesting đến live trading với AI-powered insights và cộng đồng trader chuyên nghiệp.',
-    url: 'https://quantumine.com',
+    url: 'https://quantumine.com.vn',
     siteName: 'Quantumine',
     images: [
       {
@@ -85,7 +85,7 @@ export default function RootLayout({
   return (
     <html lang="vi" className={`${inter.variable} ${jetbrainsMono.variable} ${orbitron.variable}`}>
       <head>
-        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" href="/logo.png" sizes="any" />
         <link rel="icon" href="/icon.svg" type="image/svg+xml" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="manifest" href="/manifest.json" />
