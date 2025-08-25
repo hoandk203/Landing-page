@@ -118,24 +118,67 @@ sleep 10
 print_status "Obtaining SSL certificate..."
 docker-compose down
 
-# Temporarily start nginx for certificate challenge
+# Create webroot directory and ensure permissions
+mkdir -p /var/www/certbot
+chmod 755 /var/www/certbot
+
+# Create temporary nginx config for SSL challenge
+cat > /tmp/nginx-ssl-challenge.conf << 'EOF'
+events {
+    worker_connections 1024;
+}
+
+http {
+    server {
+        listen 80;
+        server_name quantumine.com.vn www.quantumine.com.vn;
+
+        # ACME challenge location
+        location /.well-known/acme-challenge/ {
+            root /var/www/certbot;
+            try_files $uri $uri/ =404;
+        }
+
+        # Default location for testing
+        location / {
+            return 200 'SSL certificate setup in progress...';
+            add_header Content-Type text/plain;
+        }
+    }
+}
+EOF
+
+# Start nginx with proper config and volume mount
 docker run -d --name temp-nginx \
     -p 80:80 \
-    -v /var/www/certbot:/var/www/certbot \
+    -v /var/www/certbot:/var/www/certbot:ro \
+    -v /tmp/nginx-ssl-challenge.conf:/etc/nginx/nginx.conf:ro \
     nginx:alpine
 
+# Wait for nginx to start
+sleep 3
+
+# Test nginx is working
+print_status "Testing nginx configuration..."
+curl -f http://localhost/ > /dev/null || print_warning "Nginx may not be responding correctly"
+
 # Get certificate
+print_status "Requesting SSL certificate from Let's Encrypt..."
 certbot certonly --webroot \
     --webroot-path=/var/www/certbot \
     --email $EMAIL \
     --agree-tos \
     --no-eff-email \
+    --non-interactive \
     -d $DOMAIN \
     -d www.$DOMAIN
 
 # Stop temporary nginx
 docker stop temp-nginx
 docker rm temp-nginx
+
+# Clean up temporary files
+rm -f /tmp/nginx-ssl-challenge.conf
 
 # SSL certificate paths already configured for quantumine.com.vn
 
