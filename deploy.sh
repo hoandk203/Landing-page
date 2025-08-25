@@ -53,7 +53,16 @@ if ! command -v docker &> /dev/null; then
     print_status "Installing Docker..."
     curl -fsSL https://get.docker.com -o get-docker.sh
     sh get-docker.sh
-    usermod -aG docker ubuntu
+    
+    # Add current user to docker group (detect current user automatically)
+    CURRENT_USER=$(logname 2>/dev/null || echo $SUDO_USER)
+    if [ -n "$CURRENT_USER" ] && [ "$CURRENT_USER" != "root" ]; then
+        usermod -aG docker $CURRENT_USER
+        print_status "Added user $CURRENT_USER to docker group"
+    else
+        print_warning "Could not detect non-root user. You may need to add your user to docker group manually"
+    fi
+    
     rm get-docker.sh
 else
     print_status "Docker already installed"
